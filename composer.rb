@@ -471,7 +471,7 @@ if prefer :apps4, 'datarockets-blueprint'
   prefs[:ban_spiders] = false
   prefs[:better_errors] = true
 
-  prefs[:deployment] = 'capistrano'
+  prefs[:deployment] = 'capistrano3'
   prefs[:devise_modules] = false
 
   prefs[:email] = 'mandrill'
@@ -491,43 +491,12 @@ if prefer :apps4, 'datarockets-blueprint'
 
   # gems
 
+  add_gem 'cells'
+
   stage_three do
     say_wizard "recipe stage three"
-    repo = 'https://raw.github.com/RailsApps/learn-rails/master/'
-
-    # >-------------------------------[ Models ]--------------------------------<
-
-    copy_from_repo 'app/models/contact.rb', :repo => repo
-    copy_from_repo 'app/models/visitor.rb', :repo => repo
-
-    # >-------------------------------[ Controllers ]--------------------------------<
-
-    copy_from_repo 'app/controllers/contacts_controller.rb', :repo => repo
-    copy_from_repo 'app/controllers/visitors_controller.rb', :repo => repo
-
-    # >-------------------------------[ Mailers ]--------------------------------<
-
-    generate 'mailer UserMailer'
-    copy_from_repo 'app/mailers/user_mailer.rb', :repo => repo
-
-    # >-------------------------------[ Views ]--------------------------------<
-
-    copy_from_repo 'app/views/contacts/new.html.erb', :repo => repo
-    copy_from_repo 'app/views/pages/about.html.erb', :repo => repo
-    copy_from_repo 'app/views/user_mailer/contact_email.html.erb', :repo => repo
-    copy_from_repo 'app/views/user_mailer/contact_email.text.erb', :repo => repo
-    copy_from_repo 'app/views/visitors/new.html.erb', :repo => repo
-    # create navigation links using the rails_layout gem
-    generate 'layout:navigation -f'
-
-    # >-------------------------------[ Routes ]--------------------------------<
-
-    copy_from_repo 'config/routes.rb', :repo => repo
-
-    # >-------------------------------[ Assets ]--------------------------------<
-
-    copy_from_repo 'app/assets/javascripts/segmentio.js', :repo => repo
-
+    repo = 'https://raw.github.com/datarockets/rails-composer/master/'
+    create_file '.ruby-version', "#{RUBY_VERSION}\n"
   end
 end
 
@@ -562,15 +531,7 @@ if prefer :apps4, 'learn-rails'
   prefs[:disable_turbolinks] = false
 
   # gems
-  if Rails::VERSION::MAJOR == 5
-    add_gem 'high_voltage', github: 'thoughtbot/high_voltage'
-  else
-    add_gem 'high_voltage'
-  end
-  add_gem 'gibbon'
-  gsub_file 'Gemfile', /gem 'sqlite3'\n/, ''
-  add_gem 'sqlite3', :group => :development
-  add_gem 'rails_12factor', :group => :production
+
 
   stage_three do
     say_wizard "recipe stage three"
