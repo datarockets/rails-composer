@@ -397,7 +397,8 @@ when "4"
         case Rails::VERSION::MINOR.to_s
         when "2"
           prefs[:apps4] = multiple_choice "Choose a starter application.",
-          [["learn-rails", "learn-rails"],
+          [["datarockets-blueprint", "datarockets-blueprint"],
+          ["learn-rails", "learn-rails"],
           ["rails-bootstrap", "rails-bootstrap"],
           ["rails-foundation", "rails-foundation"],
           ["rails-mailinglist-activejob", "rails-mailinglist-activejob"],
@@ -449,6 +450,86 @@ say_recipe 'learn_rails'
 
 # Application template recipe for the rails_apps_composer. Change the recipe here:
 # https://github.com/RailsApps/rails_apps_composer/blob/master/recipes/learn_rails.rb
+
+if prefer :apps4, 'datarockets-blueprint'
+
+  # preferences
+  prefs[:database] = 'postgresql'
+  prefs[:pry] = true
+  prefs[:templates] = 'slim'
+  prefs[:rubocop] = true # TODO: add datarockets config
+  prefs[:tests] = 'rspec'
+  prefs[:form_builder] = 'simple_form'
+  prefs[:dev_webserver] = 'thin'
+  prefs[:prod_webserver] = 'unicorn'
+  prefs[:frontend] = 'bootstrap3'
+  prefs[:layouts] = 'none'
+
+  prefs[:authentication] = 'devise'
+  prefs[:authorization] = 'pundit'
+  prefs[:dashboard] = 'none'
+  prefs[:ban_spiders] = false
+  prefs[:better_errors] = true
+
+  prefs[:deployment] = 'capistrano'
+  prefs[:devise_modules] = false
+
+  prefs[:email] = 'mandrill'
+  prefs[:github] = false
+  prefs[:git] = true
+  prefs[:local_env_file] = 'none'
+
+
+  prefs[:quiet_assets] = true
+  prefs[:secrets] = ['owner_email', 'mailchimp_list_id', 'mailchimp_api_key']
+
+  prefs[:pages] = 'none'
+  prefs[:locale] = 'none'
+  prefs[:analytics] = 'none'
+
+  prefs[:disable_turbolinks] = false
+
+  # gems
+
+  stage_three do
+    say_wizard "recipe stage three"
+    repo = 'https://raw.github.com/RailsApps/learn-rails/master/'
+
+    # >-------------------------------[ Models ]--------------------------------<
+
+    copy_from_repo 'app/models/contact.rb', :repo => repo
+    copy_from_repo 'app/models/visitor.rb', :repo => repo
+
+    # >-------------------------------[ Controllers ]--------------------------------<
+
+    copy_from_repo 'app/controllers/contacts_controller.rb', :repo => repo
+    copy_from_repo 'app/controllers/visitors_controller.rb', :repo => repo
+
+    # >-------------------------------[ Mailers ]--------------------------------<
+
+    generate 'mailer UserMailer'
+    copy_from_repo 'app/mailers/user_mailer.rb', :repo => repo
+
+    # >-------------------------------[ Views ]--------------------------------<
+
+    copy_from_repo 'app/views/contacts/new.html.erb', :repo => repo
+    copy_from_repo 'app/views/pages/about.html.erb', :repo => repo
+    copy_from_repo 'app/views/user_mailer/contact_email.html.erb', :repo => repo
+    copy_from_repo 'app/views/user_mailer/contact_email.text.erb', :repo => repo
+    copy_from_repo 'app/views/visitors/new.html.erb', :repo => repo
+    # create navigation links using the rails_layout gem
+    generate 'layout:navigation -f'
+
+    # >-------------------------------[ Routes ]--------------------------------<
+
+    copy_from_repo 'config/routes.rb', :repo => repo
+
+    # >-------------------------------[ Assets ]--------------------------------<
+
+    copy_from_repo 'app/assets/javascripts/segmentio.js', :repo => repo
+
+  end
+end
 
 if prefer :apps4, 'learn-rails'
 
@@ -1617,10 +1698,10 @@ end
 
 ## Testing Framework
 if prefer :tests, 'rspec'
-  add_gem 'rails_apps_testing', :group => :development
+  # add_gem 'rails_apps_testing', :group => :development
   add_gem 'rspec-rails', :group => [:development, :test]
   add_gem 'spring-commands-rspec', :group => :development
-  add_gem 'factory_girl_rails', :group => [:development, :test]
+  # add_gem 'factory_girl_rails', :group => [:development, :test]
   add_gem 'faker', :group => [:development, :test]
   add_gem 'capybara', :group => :test
   add_gem 'database_cleaner', :group => :test
