@@ -464,7 +464,7 @@ if prefer :apps4, 'datarockets-blueprint'
   prefs[:prod_webserver] = 'unicorn'
   prefs[:frontend] = 'bootstrap3'
   prefs[:layouts] = 'none'
-
+  prefs[:continuous_testing] = 'none'
   prefs[:authentication] = 'devise'
   prefs[:authorization] = 'pundit'
   prefs[:dashboard] = 'none'
@@ -492,11 +492,15 @@ if prefer :apps4, 'datarockets-blueprint'
   # gems
 
   add_gem 'cells'
+  add_gem 'simplecov', :group => [:test]
 
   stage_three do
     say_wizard "recipe stage three"
-    repo = 'https://raw.github.com/datarockets/rails-composer/master/'
+    repo = 'https://raw.githubusercontent.com/barmidrol/rails-default-configs/master/'
+
     create_file '.ruby-version', "#{RUBY_VERSION}\n"
+    copy_from_repo '.editorconfig', repo: repo
+
   end
 end
 
