@@ -493,15 +493,35 @@ if prefer :apps4, 'datarockets-blueprint'
 
   add_gem 'cells'
   add_gem 'simplecov', :group => [:test]
+  add_gem 'rollbar'
+  add_gem 'newrelic_rpm'
 
   stage_three do
     say_wizard "recipe stage three"
     repo = 'https://raw.githubusercontent.com/barmidrol/rails-default-configs/master/'
 
     create_file '.ruby-version', "#{RUBY_VERSION}\n"
-    copy_from_repo '.editorconfig', repo: repo
+    create_file 'config/newrelic.yml'
 
+    copy_from_repo '.editorconfig', repo: repo
+    copy_from_repo 'circle.yml', repo: repo
+
+    generate "rollbar"
+    generate "rspec:install"
   end
+
+  stage_four do
+    say_wizard "recipe stage four"
+
+    run "mkdir config/examples"
+    run "mv config/secrets.yml config/examples/secrets.yml"
+    run "mv config/database.yml config/examples/database.yml"
+
+    git :checkout => "-b dev"
+    git :add => "-A"
+    git :commit => '-m "Initial commit"'
+  end
+
 end
 
 if prefer :apps4, 'learn-rails'
