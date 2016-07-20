@@ -365,7 +365,8 @@ when "5"
   case prefs[:apps4]
     when 'railsapps'
         prefs[:apps4] = multiple_choice "Choose a starter application.",
-        [["learn-rails", "learn-rails"],
+        [["datarockets-blueprint", "datarockets-blueprint"],
+        ["learn-rails", "learn-rails"],
         ["rails-bootstrap", "rails-bootstrap"],
         ["rails-foundation", "rails-foundation"],
         ["rails-mailinglist-activejob", "rails-mailinglist-activejob"],
@@ -512,14 +513,19 @@ if prefer :apps4, 'datarockets-blueprint'
 
   stage_four do
     say_wizard "recipe stage four"
+    repo = 'https://raw.githubusercontent.com/barmidrol/rails-default-configs/master/'
 
     run "mkdir config/examples"
     run "mv config/secrets.yml config/examples/secrets.yml"
     run "mv config/database.yml config/examples/database.yml"
 
-    git :checkout => "-b dev"
-    git :add => "-A"
-    git :commit => '-m "Initial commit"'
+    copy_from_repo 'bin/bootstrap', repo: repo
+
+    # remove_file 'spec/features/visitors/navigation_spec.rb'
+
+    # git :checkout => "-b dev"
+    # git :add => "-A"
+    # git :commit => '-m "Initial commit"'
   end
 
 end
