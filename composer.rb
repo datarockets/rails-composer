@@ -365,7 +365,8 @@ when "5"
   case prefs[:apps4]
     when 'railsapps'
         prefs[:apps4] = multiple_choice "Choose a starter application.",
-        [["learn-rails", "learn-rails"],
+        [["datarockets-blueprint", "datarockets-blueprint"],
+        ["learn-rails", "learn-rails"],
         ["rails-bootstrap", "rails-bootstrap"],
         ["rails-foundation", "rails-foundation"],
         ["rails-mailinglist-activejob", "rails-mailinglist-activejob"],
@@ -397,7 +398,8 @@ when "4"
         case Rails::VERSION::MINOR.to_s
         when "2"
           prefs[:apps4] = multiple_choice "Choose a starter application.",
-          [["learn-rails", "learn-rails"],
+          [["datarockets-blueprint", "datarockets-blueprint"],
+          ["learn-rails", "learn-rails"],
           ["rails-bootstrap", "rails-bootstrap"],
           ["rails-foundation", "rails-foundation"],
           ["rails-mailinglist-activejob", "rails-mailinglist-activejob"],
@@ -450,6 +452,84 @@ say_recipe 'learn_rails'
 # Application template recipe for the rails_apps_composer. Change the recipe here:
 # https://github.com/RailsApps/rails_apps_composer/blob/master/recipes/learn_rails.rb
 
+if prefer :apps4, 'datarockets-blueprint'
+
+  # preferences
+  prefs[:database] = 'postgresql'
+  prefs[:pry] = true
+  prefs[:templates] = 'slim'
+  prefs[:rubocop] = true # TODO: add datarockets config
+  prefs[:tests] = 'rspec'
+  prefs[:form_builder] = 'simple_form'
+  prefs[:dev_webserver] = 'thin'
+  prefs[:prod_webserver] = 'unicorn'
+  prefs[:frontend] = 'bootstrap3'
+  prefs[:layouts] = 'none'
+  prefs[:continuous_testing] = 'none'
+  prefs[:authentication] = 'devise'
+  prefs[:authorization] = 'pundit'
+  prefs[:dashboard] = 'none'
+  prefs[:ban_spiders] = false
+  prefs[:better_errors] = true
+
+  prefs[:deployment] = 'capistrano3'
+  prefs[:devise_modules] = false
+
+  prefs[:email] = 'mandrill'
+  prefs[:github] = false
+  prefs[:git] = true
+  prefs[:local_env_file] = 'none'
+
+
+  prefs[:quiet_assets] = true
+  prefs[:secrets] = ['owner_email', 'mailchimp_list_id', 'mailchimp_api_key']
+
+  prefs[:pages] = 'none'
+  prefs[:locale] = 'none'
+  prefs[:analytics] = 'none'
+
+  prefs[:disable_turbolinks] = false
+
+  # gems
+
+  add_gem 'cells'
+  add_gem 'simplecov', :group => [:test]
+  add_gem 'rollbar'
+  add_gem 'newrelic_rpm'
+
+  stage_three do
+    say_wizard "recipe stage three"
+    repo = 'https://raw.githubusercontent.com/barmidrol/rails-default-configs/master/'
+
+    create_file '.ruby-version', "#{RUBY_VERSION}\n"
+    create_file 'config/newrelic.yml'
+
+    copy_from_repo '.editorconfig', repo: repo
+    copy_from_repo 'circle.yml', repo: repo
+
+    generate "rollbar"
+    generate "rspec:install"
+  end
+
+  stage_four do
+    say_wizard "recipe stage four"
+    repo = 'https://raw.githubusercontent.com/barmidrol/rails-default-configs/master/'
+
+    run "mkdir config/examples"
+    run "mv config/secrets.yml config/examples/secrets.yml"
+    run "mv config/database.yml config/examples/database.yml"
+
+    copy_from_repo 'bin/bootstrap', repo: repo
+
+    # remove_file 'spec/features/visitors/navigation_spec.rb'
+
+    # git :checkout => "-b dev"
+    # git :add => "-A"
+    # git :commit => '-m "Initial commit"'
+  end
+
+end
+
 if prefer :apps4, 'learn-rails'
 
   # preferences
@@ -481,15 +561,7 @@ if prefer :apps4, 'learn-rails'
   prefs[:disable_turbolinks] = false
 
   # gems
-  if Rails::VERSION::MAJOR == 5
-    add_gem 'high_voltage', github: 'thoughtbot/high_voltage'
-  else
-    add_gem 'high_voltage'
-  end
-  add_gem 'gibbon'
-  gsub_file 'Gemfile', /gem 'sqlite3'\n/, ''
-  add_gem 'sqlite3', :group => :development
-  add_gem 'rails_12factor', :group => :production
+
 
   stage_three do
     say_wizard "recipe stage three"
@@ -1617,10 +1689,10 @@ end
 
 ## Testing Framework
 if prefer :tests, 'rspec'
-  add_gem 'rails_apps_testing', :group => :development
+  # add_gem 'rails_apps_testing', :group => :development
   add_gem 'rspec-rails', :group => [:development, :test]
   add_gem 'spring-commands-rspec', :group => :development
-  add_gem 'factory_girl_rails', :group => [:development, :test]
+  # add_gem 'factory_girl_rails', :group => [:development, :test]
   add_gem 'faker', :group => [:development, :test]
   add_gem 'capybara', :group => :test
   add_gem 'database_cleaner', :group => :test
